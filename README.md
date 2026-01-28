@@ -2,7 +2,7 @@
 
 ## 项目简介
 
-本项目基于Kite AI支付，实现在工资发放场景下的多Agent结算系统。使用html、css、JavaScript、node.js技术栈，暂不接入智能合约。
+本项目基于Kite AI支付，实现在工资发放场景下的多Agent结算系统。使用html、css、JavaScript、node.js技术栈，暂未接入智能合约。
 
 ## 项目结构
 
@@ -62,11 +62,17 @@ EMPLOYEE_AGENT_KEY=employee_agent_private_key
 ENVIRONMENT=development
 ```
 
-### 启动项目
+### 项目启动
 
 ```bash
-npm start
+npm run server
 ```
+
+### 前端项目说明
+
+- 前端项目基于Vue.js，使用Element UI组件库。
+- 前端项目部署在localhost:8080。
+- 前端项目与后端项目通过Kite AI支付API进行通信。
 
 ## 流程说明
 
@@ -77,6 +83,6 @@ npm start
 
 ## 注意事项
 
-- 本项目暂不接入智能合约
+- 本项目暂未能接入智能合约
 - 实际使用时需替换真实的API密钥和私钥
 - 确保网络环境能够访问Kite AI支付服务
