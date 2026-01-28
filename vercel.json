@@ -4,14 +4,6 @@
     {
       "src": "server.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist",
-        "buildCommand": "npm install && npm run build"
-      }
     }
   ],
   "routes": [
@@ -20,9 +12,12 @@
       "dest": "/server.js"
     },
     {
+      "src": "/assets/(.*)",
+      "dest": "/frontend/dist/assets/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/frontend/dist/$1",
-      "status": 200
+      "dest": "/frontend/dist/$1"
     }
   ]
 }
