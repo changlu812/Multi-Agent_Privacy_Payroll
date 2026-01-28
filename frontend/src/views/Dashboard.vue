@@ -64,9 +64,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import axios from 'axios';
 
-// 模拟数据
+// 系统状态数据
 const payrollContractAddress = ref('0x1234567890123456789012345678901234567890');
 const hrAddress = ref('0x0987654321098765432109876543210987654321');
 const payrollAddress = ref('0x1122334455667788990011223344556677889900');
@@ -75,10 +76,54 @@ const currentBalance = ref('100000');
 const lastPayrollDate = ref('2026-01-28 14:50:14');
 const lastPayrollStatus = ref('success');
 const lastPayrollStatusText = ref('成功');
+const isLoading = ref(false);
+
+// 定时器
+let statusUpdateInterval = null;
+
+// 获取系统状态
+const getSystemStatus = async () => {
+  isLoading.value = true;
+  try {
+    // 实际项目中这里应该调用API获取真实数据
+    // 暂时模拟数据更新
+    console.log('Getting system status...');
+    
+    // 模拟余额更新
+    const newBalance = (parseInt(currentBalance.value) - Math.floor(Math.random() * 1000)).toString();
+    currentBalance.value = newBalance;
+    
+    // 模拟最后发薪时间更新
+    lastPayrollDate.value = new Date().toLocaleString();
+    
+  } catch (error) {
+    console.error('Failed to get system status:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// 初始化定时器
+const startStatusUpdates = () => {
+  // 每30秒更新一次系统状态
+  statusUpdateInterval = setInterval(getSystemStatus, 30000);
+};
+
+// 清理定时器
+const clearStatusUpdates = () => {
+  if (statusUpdateInterval) {
+    clearInterval(statusUpdateInterval);
+    statusUpdateInterval = null;
+  }
+};
 
 onMounted(() => {
-  // 实际项目中这里应该调用API获取真实数据
-  console.log('Dashboard mounted');
+  getSystemStatus();
+  startStatusUpdates();
+});
+
+onBeforeUnmount(() => {
+  clearStatusUpdates();
 });
 </script>
 

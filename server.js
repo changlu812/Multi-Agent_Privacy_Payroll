@@ -32,7 +32,7 @@ app.post('/api/runPayroll', async (req, res) => {
     const orchestrator = new Orchestrator();
     
     // 运行发薪流程
-    const result = await orchestrator.runPayroll(employees);
+    const result = await orchestrator.runPayrollProcess(employees);
 
     console.log('Payroll process completed:', result);
 

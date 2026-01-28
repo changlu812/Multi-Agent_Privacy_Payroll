@@ -1,24 +1,30 @@
 <template>
   <div class="process-visualization">
     <h1>流程可视化</h1>
-    
+
     <!-- 时间线 -->
     <div class="timeline">
       <h3>发薪流程时间线</h3>
       <div class="timeline-container">
-        <div 
-          v-for="(step, index) in processSteps" 
+        <div
+          v-for="(step, index) in processSteps"
           :key="index"
           class="timeline-item"
           :class="step.status"
         >
           <div class="timeline-marker">
-            {{ step.status === 'completed' ? '✓' : step.status === 'processing' ? '⏳' : '○' }}
+            {{
+              step.status === "completed"
+                ? "✓"
+                : step.status === "processing"
+                  ? "⏳"
+                  : "○"
+            }}
           </div>
           <div class="timeline-content">
             <h4>{{ step.title }}</h4>
             <p class="timeline-description">{{ step.description }}</p>
-            <p class="timeline-time">{{ step.time || '' }}</p>
+            <p class="timeline-time">{{ step.time || "" }}</p>
           </div>
         </div>
       </div>
@@ -28,8 +34,8 @@
     <div class="logs-window">
       <h3>流程日志</h3>
       <div class="logs-container">
-        <div 
-          v-for="(log, index) in processLogs" 
+        <div
+          v-for="(log, index) in processLogs"
           :key="index"
           class="log-item"
           :class="log.level"
@@ -38,134 +44,123 @@
           <span class="log-level">{{ log.level.toUpperCase() }}</span>
           <span class="log-message">{{ log.message }}</span>
         </div>
+        <div v-if="processLogs.length === 0" class="no-logs">暂无流程日志</div>
       </div>
     </div>
 
     <!-- 操作按钮 -->
     <div class="action-buttons">
-      <button class="refresh-btn" @click="refreshProcess">刷新状态</button>
+      <button class="refresh-btn" @click="refreshProcess" :disabled="isLoading">
+        {{ isLoading ? "刷新中..." : "刷新状态" }}
+      </button>
       <button class="clear-btn" @click="clearLogs">清空日志</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from "vue";
+import axios from "axios";
 
+const isLoading = ref(false);
 const processSteps = ref([
   {
-    title: '初始化流程',
-    description: '系统准备发薪流程，验证参数',
-    status: 'completed',
-    time: new Date().toLocaleString()
+    title: "初始化流程",
+    description: "系统准备发薪流程，验证参数",
+    status: "pending",
+    time: "",
   },
   {
-    title: 'HR创建工资单',
-    description: 'HR Agent 创建工资单并加密金额',
-    status: 'completed',
-    time: new Date().toLocaleString()
+    title: "HR创建工资单",
+    description: "HR Agent 创建工资单并加密金额",
+    status: "pending",
+    time: "",
   },
   {
-    title: 'Payroll处理支付',
-    description: 'Payroll Agent 解密金额并执行支付',
-    status: 'completed',
-    time: new Date().toLocaleString()
+    title: "Payroll处理支付",
+    description: "Payroll Agent 解密金额并执行支付",
+    status: "pending",
+    time: "",
   },
   {
-    title: 'Employee验证到账',
-    description: 'Employee Agent 验证支付到账情况',
-    status: 'completed',
-    time: new Date().toLocaleString()
+    title: "Employee验证到账",
+    description: "Employee Agent 验证支付到账情况",
+    status: "pending",
+    time: "",
   },
   {
-    title: '生成最终报告',
-    description: '系统生成发薪流程最终报告',
-    status: 'completed',
-    time: new Date().toLocaleString()
-  }
+    title: "生成最终报告",
+    description: "系统生成发薪流程最终报告",
+    status: "pending",
+    time: "",
+  },
 ]);
 
-const processLogs = ref([
-  {
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: '系统启动发薪流程'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: 'HR Agent 创建工资单: payroll_1769583013998'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: 'HR Agent 加密工资金额'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: 'Payroll Agent 处理工资单: payroll_1769583013998'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: 'Payroll Agent 解密张三工资: 10000'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'success',
-    message: 'Payroll Agent 执行支付到 0x1234567890123456789012345678901234567890: 10000'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: 'Payroll Agent 解密李四工资: 15000'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'success',
-    message: 'Payroll Agent 执行支付到 0x0987654321098765432109876543210987654321: 15000'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: 'Payroll Agent 解密王五工资: 12000'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'success',
-    message: 'Payroll Agent 执行支付到 0x1122334455667788990011223344556677889900: 12000'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: 'Employee Agent 验证张三到账: success'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: 'Employee Agent 验证李四到账: success'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: 'Employee Agent 验证王五到账: success'
-  },
-  {
-    time: new Date().toLocaleString(),
-    level: 'success',
-    message: '发薪流程完成，共成功发放 3 笔工资'
+const processLogs = ref([]);
+
+// 获取流程状态
+const getProcessStatus = async () => {
+  isLoading.value = true;
+  try {
+    // 这里可以从后端API获取流程状态
+    // 暂时模拟流程执行
+    simulateProcessExecution();
+  } catch (error) {
+    console.error("Failed to get process status:", error);
+    processLogs.value.push({
+      time: new Date().toLocaleString(),
+      level: "error",
+      message: "获取流程状态失败: " + error.message,
+    });
+  } finally {
+    isLoading.value = false;
   }
-]);
+};
+
+// 模拟流程执行
+const simulateProcessExecution = () => {
+  let stepIndex = 0;
+
+  const executeStep = () => {
+    if (stepIndex < processSteps.value.length) {
+      const step = processSteps.value[stepIndex];
+      step.status = "processing";
+      step.time = new Date().toLocaleString();
+
+      processLogs.value.push({
+        time: step.time,
+        level: "info",
+        message: `开始执行: ${step.title}`,
+      });
+
+      // 模拟步骤执行时间
+      setTimeout(() => {
+        step.status = "completed";
+        processLogs.value.push({
+          time: new Date().toLocaleString(),
+          level: "success",
+          message: `完成执行: ${step.title}`,
+        });
+
+        stepIndex++;
+        executeStep();
+      }, 1000);
+    } else {
+      // 流程完成
+      processLogs.value.push({
+        time: new Date().toLocaleString(),
+        level: "success",
+        message: "发薪流程完成，共成功发放 3 笔工资",
+      });
+    }
+  };
+
+  executeStep();
+};
 
 // 刷新流程状态
 const refreshProcess = () => {
-  // 模拟刷新操作
-  processLogs.value.push({
-    time: new Date().toLocaleString(),
-    level: 'info',
-    message: '刷新流程状态'
-  });
+  getProcessStatus();
 };
 
 // 清空日志
@@ -173,9 +168,18 @@ const clearLogs = () => {
   processLogs.value = [];
 };
 
+// 监听URL参数，判断是否从发薪任务页跳转过来
+const checkUrlParams = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const fromPayroll = urlParams.get("fromPayroll");
+  if (fromPayroll === "true") {
+    // 从发薪任务页跳转过来，自动开始流程
+    getProcessStatus();
+  }
+};
+
 onMounted(() => {
-  // 模拟流程执行
-  console.log('Process visualization mounted');
+  checkUrlParams();
 });
 </script>
 
@@ -200,7 +204,7 @@ onMounted(() => {
 }
 
 .timeline-container::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 15px;
   top: 0;
@@ -295,7 +299,7 @@ onMounted(() => {
   padding: 8px 0;
   border-bottom: 1px solid #eee;
   display: flex;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 13px;
 }
 
@@ -336,31 +340,39 @@ onMounted(() => {
   flex: 1;
 }
 
+.no-logs {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
 /* 操作按钮 */
 .action-buttons {
   display: flex;
   gap: 10px;
 }
 
-.refresh-btn, .clear-btn {
+.refresh-btn,
+.clear-btn {
   padding: 8px 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
   background: white;
   cursor: pointer;
   transition: all 0.3s;
   font-size: 14px;
+  color: #333;
 }
 
-.refresh-btn:hover {
-  background: #f0f0f0;
-  border-color: #1890ff;
-  color: #1890ff;
-}
-
+.refresh-btn:hover:not(:disabled),
 .clear-btn:hover {
-  background: #f0f0f0;
-  border-color: #ff4d4f;
-  color: #ff4d4f;
+  background: #f5f5f5;
+  border-color: #d0d0d0;
+}
+
+.refresh-btn:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
 }
 </style>

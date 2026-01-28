@@ -3,7 +3,7 @@
     <!-- 导航栏 -->
     <nav class="navbar">
       <div class="navbar-brand">
-        <h1>Kite Payroll System</h1>
+        <h1>Multi-Agent Payment Payroll</h1>
       </div>
       <div class="navbar-menu">
         <router-link to="/" class="nav-link">系统状态</router-link>
@@ -19,7 +19,7 @@
 
     <!-- 页脚 -->
     <footer class="footer">
-      <p>© 2026 Kite Payroll System | Powered by Vue 3</p>
+      <p>© 2026 Multi-Agent Payment Payroll</p>
     </footer>
   </div>
 </template>
@@ -33,7 +33,9 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   color: #333;
@@ -50,7 +52,7 @@ body {
 /* 导航栏 */
 .navbar {
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e0e0e0;
   padding: 0 20px;
   display: flex;
   align-items: center;
@@ -64,7 +66,7 @@ body {
 .navbar-brand h1 {
   font-size: 20px;
   font-weight: 600;
-  color: #1890ff;
+  color: #333;
 }
 
 .navbar-menu {
@@ -78,18 +80,21 @@ body {
   font-size: 14px;
   font-weight: 500;
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 8px;
   transition: all 0.3s;
+  border: 1px solid transparent;
 }
 
 .nav-link:hover {
-  color: #1890ff;
-  background: #e6f7ff;
+  color: #333;
+  background: #f5f5f5;
+  border-color: #e0e0e0;
 }
 
 .nav-link.router-link-active {
-  color: #1890ff;
-  background: #e6f7ff;
+  color: #333;
+  background: #f0f0f0;
+  border-color: #e0e0e0;
   font-weight: 600;
 }
 

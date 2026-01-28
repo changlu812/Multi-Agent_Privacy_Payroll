@@ -1,64 +1,41 @@
 <template>
   <div class="payroll-task">
-    <h1>发薪任务</h1>
-
-    <div class="form-container">
-      <form @submit.prevent="submitPayroll">
-        <div class="form-group">
-          <label for="employeeAddress">员工地址</label>
-          <input
-            type="text"
-            id="employeeAddress"
-            v-model="employeeAddress"
-            placeholder="0x1234567890123456789012345678901234567890"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="amount">金额</label>
-          <div class="amount-input">
-            <input
-              type="number"
-              id="amount"
-              v-model="amount"
-              placeholder="10000"
-              required
-            />
-            <span class="encrypted-badge">已加密</span>
-          </div>
-        </div>
-
-        <button type="submit" class="submit-btn" :disabled="isSubmitting">
-          {{ isSubmitting ? "处理中..." : "启动发薪流程" }}
-        </button>
-      </form>
-    </div>
+    <!-- <h1>发薪任务</h1> -->
 
     <!-- 员工列表 -->
     <div class="employees-list">
-      <h3>员工列表</h3>
+      <div class="list-header">
+        <h3>员工列表</h3>
+        <button
+          class="submit-btn"
+          @click="startPayrollProcess"
+          :disabled="isSubmitting || employees.length === 0"
+        >
+          {{ isSubmitting ? "处理中..." : "启动发薪流程" }}
+        </button>
+      </div>
       <div class="employees-table">
         <table>
           <thead>
             <tr>
+              <th>员工ID</th>
+              <th>员工姓名</th>
               <th>员工地址</th>
               <th>金额</th>
-              <th>操作</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(employee, index) in employees" :key="index">
+            <tr v-for="employee in employees" :key="employee.id">
+              <td>{{ employee.id }}</td>
+              <td>{{ employee.name }}</td>
               <td>{{ employee.address }}</td>
               <td>
                 {{ employee.amount }}
                 <span class="encrypted-badge small">已加密</span>
               </td>
-              <td>
-                <button class="remove-btn" @click="removeEmployee(index)">
-                  删除
-                </button>
-              </td>
+            </tr>
+            <tr v-if="employees.length === 0">
+              <td colspan="4" class="no-data">暂无员工数据</td>
             </tr>
           </tbody>
         </table>
@@ -68,32 +45,40 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 
-const employeeAddress = ref("");
-const amount = ref("");
 const isSubmitting = ref(false);
 const employees = ref([]);
 
-// 添加员工
-const submitPayroll = async () => {
-  if (!employeeAddress.value || !amount.value) return;
-
-  // 添加员工到列表
-  employees.value.push({
-    address: employeeAddress.value,
-    amount: amount.value,
-  });
-
-  // 清空表单
-  employeeAddress.value = "";
-  amount.value = "";
-};
-
-// 移除员工
-const removeEmployee = (index) => {
-  employees.value.splice(index, 1);
+// 获取员工列表
+const getEmployees = async () => {
+  try {
+    // 这里可以从后端API获取员工列表
+    // 暂时使用模拟数据
+    employees.value = [
+      {
+        id: "emp001",
+        name: "张三",
+        address: "0x1234567890123456789012345678901234567890",
+        amount: "10000",
+      },
+      {
+        id: "emp002",
+        name: "李四",
+        address: "0x0987654321098765432109876543210987654321",
+        amount: "15000",
+      },
+      {
+        id: "emp003",
+        name: "王五",
+        address: "0x1122334455667788990011223344556677889900",
+        amount: "12000",
+      },
+    ];
+  } catch (error) {
+    console.error("Failed to get employees:", error);
+  }
 };
 
 // 启动发薪流程
@@ -102,24 +87,24 @@ const startPayrollProcess = async () => {
 
   isSubmitting.value = true;
   try {
-    const response = await axios.post("/api/runPayroll", {
-      employees: employees.value.map((emp) => ({
-        id: `emp${Date.now()}${Math.random().toString(36).substr(2, 9)}`,
-        name: `Employee ${employees.value.indexOf(emp) + 1}`,
-        address: emp.address,
-        amount: emp.amount,
-      })),
+    const response = await axios.post("http://localhost:3000/api/runPayroll", {
+      employees: employees.value,
     });
 
     console.log("Payroll process started:", response.data);
-    // 可以跳转到流程可视化页面
-    window.location.href = "/process";
+    // 跳转到流程可视化页面，添加参数标识来自发薪任务页
+    window.location.href = "/process?fromPayroll=true";
   } catch (error) {
     console.error("Failed to start payroll process:", error);
   } finally {
     isSubmitting.value = false;
   }
 };
+
+// 页面加载时获取员工列表
+onMounted(() => {
+  getEmployees();
+});
 </script>
 
 <style scoped>
@@ -127,43 +112,23 @@ const startPayrollProcess = async () => {
   padding: 20px;
 }
 
-.form-container {
-  background: #f5f5f5;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.employees-list {
+  margin-top: 20px;
 }
 
-.form-group {
-  margin-bottom: 20px;
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
+.list-header h3 {
+  margin: 0;
   color: #333;
 }
 
-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  font-family: "Courier New", monospace;
-}
-
-.amount-input {
-  position: relative;
-}
-
 .encrypted-badge {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
   background: #e6f7ee;
   color: #137333;
   padding: 4px 12px;
@@ -177,33 +142,27 @@ input {
 }
 
 .submit-btn {
-  background: #1890ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
   padding: 12px 24px;
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s;
 }
 
-.submit-btn:hover {
-  background: #40a9ff;
+.submit-btn:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #d0d0d0;
 }
 
 .submit-btn:disabled {
-  background: #d9d9d9;
+  background: #f5f5f5;
+  color: #999;
+  border-color: #e0e0e0;
   cursor: not-allowed;
-}
-
-.employees-list {
-  margin-top: 30px;
-}
-
-.employees-list h3 {
-  margin-bottom: 15px;
-  color: #333;
 }
 
 .employees-table {
@@ -236,18 +195,9 @@ tr:hover {
   background: #fafafa;
 }
 
-.remove-btn {
-  background: #ff4d4f;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.remove-btn:hover {
-  background: #ff7875;
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #999;
 }
 </style>
