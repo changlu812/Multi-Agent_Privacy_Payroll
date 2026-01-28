@@ -1,0 +1,117 @@
+/* 全局样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  background: #f5f5f5;
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* 通用按钮样式 */
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* 通用输入框样式 */
+input {
+  font-family: inherit;
+}
+
+/* 通用链接样式 */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 通用表格样式 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* 通用标题样式 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: #333;
+}
+
+/* 通用辅助文本样式 */
+.text-muted {
+  color: #999;
+  font-size: 14px;
+}
+
+/* 通用成功状态样式 */
+.text-success {
+  color: #52c41a;
+}
+
+/* 通用错误状态样式 */
+.text-error {
+  color: #ff4d4f;
+}
+
+/* 通用警告状态样式 */
+.text-warning {
+  color: #faad14;
+}
+
+/* 通用信息状态样式 */
+.text-info {
+  color: #1890ff;
+}
+
+/* 通用容器样式 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 通用卡片样式 */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* 通用加载动画 */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #1890ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 10px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+}

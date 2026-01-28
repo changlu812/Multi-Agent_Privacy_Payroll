@@ -1,0 +1,27 @@
+{
+  "name": "multi-agent-payment",
+  "version": "1.0.0",
+  "description": "基于Kite AI支付的多Agent工资结算系统",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "server": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "dotenv": "^16.3.1",
+    "express": "^5.2.1",
+    "gokite-aa-sdk": "^1.0.14"
+  },
+  "keywords": [
+    "kite",
+    "ai",
+    "payment",
+    "multi-agent",
+    "payroll"
+  ],
+  "author": "",
+  "license": "MIT"
+}
